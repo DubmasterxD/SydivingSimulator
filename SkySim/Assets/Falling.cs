@@ -5,6 +5,8 @@ using UnityEngine;
 public class Falling : MonoBehaviour {
 
     private readonly int x = 0, y = 1;
+    private Rigidbody rb;
+    private Animator anim;
 
     //variables
     public Vector3 location = new Vector3(0, 4000, 0);              // position of jumper [m]
@@ -43,24 +45,29 @@ public class Falling : MonoBehaviour {
     // Use this for initialization
     void Start ()
     {
+        // if starting velocity is 0, set is to be the lowest possible number, that won't break the code
+        if(velocity[x]==0&&velocity[y]==0)
+        {
+            velocity[y] = 0.000000000000000000001f;
+        }
         // y = y0 + (x - x0)*(y1 - y0)/(x1 - x0)
         radius = equatorialRadius + latitude * (polarRadius - equatorialRadius) / 90;
 
+        rb = GetComponent<Rigidbody>();
+        anim = GetComponent<Animator>();
+
         //testing
-        dragCoefficient = 1;
-        liftCoefficient = 1;
+        dragCoefficient = 0.9f;
+        liftCoefficient = 0.05f;
         latitude = 0;
         mass = 70;
-        frontArea = 1;
-        topArea = 0.3f;
+        frontArea = 0.5f;
+        topArea = 0.04f;
 	}
 	
 	// Update is called once per frame
 	void Update ()
     {
-        Debug.Log("Położenie : " + location[x] + ", " + location[y] + "\nPrędkość : " + velocity[x] + ", " + velocity[y]);
-        Debug.Log("Terminal velocity : " + (Mathf.Sqrt(2 * mass * gravity / (airDensity * (dragCoefficient * dragProjectedArea + liftCoefficient * liftProcejtedArea)))));
-
         // g = G * M / r^2
         gravity = gravitationalConstant * earthMass / Mathf.Pow(radius + location[y], 2);
         // T = T0 - L * h
@@ -69,6 +76,26 @@ public class Falling : MonoBehaviour {
         pressure = standardPressure * Mathf.Pow(1 - temperatureLapseRate * location[y] / standardTemperature, (gravity * airMolarMass) / (gasConstant * temperatureLapseRate));
         // rho = (p * Ma) / (R * T)
         airDensity = (pressure * airMolarMass) / (gasConstant * temperature);
+        // calculating current reference line taken from rotation of skydiver. Having the rotation I use y=ax, where a is tan(rotation),
+        // and put some value to x so I can calculate y and therefore direction of reference line. 
+        // but I need to make sure that the rotation is neither 0 nor 180 for tan
+        if (transform.rotation.eulerAngles.x == 0)
+        {
+            referenceLineDirection = new Vector3(0, 1, 0);
+        }
+        else if (transform.rotation.eulerAngles.x == 180)
+        {
+            referenceLineDirection = new Vector3(0, -1, 0);
+        }
+        else
+        {
+            referenceLineDirection[x] = 1;
+            referenceLineDirection[y] = referenceLineDirection[x] * Mathf.Tan(Mathf.Deg2Rad * transform.rotation.eulerAngles.x);
+            if(referenceLineDirection[y]<Mathf.Abs(0.001f))
+            {
+                referenceLineDirection[y] = 0;
+            }
+        }
         // The cosine of the angle between two vectors is equal to the dot product of this vectors divided by the product of vector magnitude.
         angleOfAttack = Mathf.Acos((velocity[x] * referenceLineDirection[x] + velocity[y] * referenceLineDirection[y]) / (Mathf.Sqrt(Mathf.Pow(velocity[x], 2) + Mathf.Pow(velocity[y], 2)) * Mathf.Sqrt(Mathf.Pow(referenceLineDirection[x], 2) + Mathf.Pow(referenceLineDirection[y], 2))));
         alpha = Mathf.Acos(velocity[x] / (Mathf.Sqrt(Mathf.Pow(velocity[x], 2) + Mathf.Pow(velocity[y], 2))));
@@ -84,9 +111,35 @@ public class Falling : MonoBehaviour {
         location[x] += velocity[x] * Time.deltaTime;
         // y(t + dt) = y(t) + vy(t) * dt
         location[y] += velocity[y] * Time.deltaTime;
-        // vy(t + dt) = vy(t) + Fy(t) * dt / m
-        velocity[x] += acceleration[x] * Time.deltaTime;
         // vx(t + dt) = vx(t) + Fx(t) * dt / m
+        velocity[x] += acceleration[x] * Time.deltaTime;
+        // vy(t + dt) = vy(t) + F(t) * dt / m
         velocity[y] += acceleration[y] * Time.deltaTime;
+
+
+
+        // locates jumper in the right position on the map
+        rb.transform.SetPositionAndRotation(location, rb.rotation);
+        // using angle of attack to adjust animation
+        angleOfAttack = angleOfAttack * Mathf.Rad2Deg * 3 / 2;
+        if(angleOfAttack>30)
+        {
+            angleOfAttack = 30;
+        }
+        if(angleOfAttack<0)
+        {
+            angleOfAttack = 0;
+        }
+        anim.Play("Fall", 0, (30 - angleOfAttack) / 30.0f);
+        // adjusting camera rotation and position to follow speed vector
+        if(velocity[x]!=0)
+        {
+            GetComponentInChildren<Camera>().gameObject.transform.localRotation = Quaternion.Euler(-90 - Mathf.Rad2Deg * Mathf.Atan2(velocity[y], velocity[x]), 0, 0);
+            GetComponentInChildren<Camera>().gameObject.transform.localPosition = new Vector3(0, -200 * Mathf.Cos(Mathf.Atan2(velocity[y], velocity[x]))+100, 200 * Mathf.Sin(Mathf.Atan2(velocity[y], velocity[x])));
+        }
+        // distance to surface
+        RaycastHit hit = new RaycastHit();
+        Physics.Raycast(location, new Vector3(0, -1, 0),out hit);
+        Debug.Log(hit.distance);
     }
 }
