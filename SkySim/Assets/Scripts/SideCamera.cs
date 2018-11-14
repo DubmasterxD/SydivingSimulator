@@ -4,15 +4,14 @@ using UnityEngine;
 
 public class SideCamera : MonoBehaviour
 {
+    // Reference
+    private Camera cam;
 
-    // Use this for initialization
     void Start()
     {
-
-    }
-    // Update is called once per frame
-    void Update()
-    {
-
+        // Sets camera to show exactly area between jumper and ground
+        cam = gameObject.GetComponent<Camera>();
+        cam.orthographicSize = GameController.instance.startingHeight / 2;
+        cam.transform.position = new Vector3(cam.orthographicSize / 2, cam.orthographicSize + GameController.instance.startingAltitude - GameController.instance.startingHeight, cam.transform.position.z);
     }
 }
