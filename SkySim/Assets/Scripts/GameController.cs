@@ -11,14 +11,15 @@ public class GameController : MonoBehaviour
     // Variables
     public float startingAltitude;
     public float startingHeight;
-    public float mass;
-    public float latitude;
-    public float humanHeight;
+    public float jumpersMass;
+    public float jumpersLatitude;
+    public float jumpersHeight;
     public float planeSpeed;
     public float minHeight = 457;
     public float[] warningHeights = { 1219, 1066, 914, 762, 609 };
     public Licenses license;
     public bool gameRunning = false;
+    public bool challengeJump = false;
 
     // References
     public static GameController instance;

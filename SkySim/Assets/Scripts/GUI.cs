@@ -7,13 +7,13 @@ using UnityEngine.SceneManagement;
 public class GUI : MonoBehaviour
 {
     // Variables
-    private Vector2 startingAnchorHeightX;
-    private Vector2 startingAnchorHeightY;
-    private Vector2 startingAnchorLengthX;
-    private Vector2 startingAnchorLengthY;
+    private Vector2 startingAnchorGUIHeightX;
+    private Vector2 startingAnchorGUIHeightY;
+    private Vector2 startingAnchorGUILengthX;
+    private Vector2 startingAnchorGUILengthY;
     private float timeSinceJump = 0;
-    private float maxVerticalVelocity = 0;
-    private float sumVerticalVelocity = 0;
+    private float maxSpeed = 0;
+    private float sumSpeed = 0;
     private float sumAngleOfAttack = 0;
     private float currLocation;
 
@@ -21,9 +21,11 @@ public class GUI : MonoBehaviour
     public Text height;
     public Text length;
     public Text timer;
+    public Text speed;
     public Text verticalVelocity;
     public Text horizontalVelocity;
     public Text scores;
+    public Button deployParachute;
     public RawImage warningLine;                // Line on minimap to show recommended lowest height to open parachute
     public RawImage endLine;                    // Line on minimap to show lowest height possible without
     public GameObject warning;                  // GUI height warning
@@ -37,27 +39,42 @@ public class GUI : MonoBehaviour
     void Start()
     {
         playerFalling = player.GetComponent<Falling>();
-        currLocation = playerFalling.location[1] - GameController.instance.startingAltitude + GameController.instance.startingHeight;
-        startingAnchorHeightX = new Vector2(height.rectTransform.anchorMin.x, height.rectTransform.anchorMax.x);
-        startingAnchorHeightY = new Vector2(height.rectTransform.anchorMin.y, height.rectTransform.anchorMax.y);
-        startingAnchorLengthX = new Vector2(length.rectTransform.anchorMin.x, length.rectTransform.anchorMax.x);
-        startingAnchorLengthY = new Vector2(length.rectTransform.anchorMin.y, length.rectTransform.anchorMax.y);
+        currLocation = playerFalling.jumpersLocation[1] - GameController.instance.startingAltitude + GameController.instance.startingHeight;
+        startingAnchorGUIHeightX = new Vector2(height.rectTransform.anchorMin.x, height.rectTransform.anchorMax.x);
+        startingAnchorGUIHeightY = new Vector2(height.rectTransform.anchorMin.y, height.rectTransform.anchorMax.y);
+        startingAnchorGUILengthX = new Vector2(length.rectTransform.anchorMin.x, length.rectTransform.anchorMax.x);
+        startingAnchorGUILengthY = new Vector2(length.rectTransform.anchorMin.y, length.rectTransform.anchorMax.y);
         endLine.rectTransform.anchorMin = new Vector2(0, GameController.instance.minHeight / GameController.instance.startingHeight);
-        endLine.rectTransform.anchorMax = new Vector2(0.5f, GameController.instance.minHeight / GameController.instance.startingHeight);
+        endLine.rectTransform.anchorMax = new Vector2(0.75f, GameController.instance.minHeight / GameController.instance.startingHeight);
         warningLine.rectTransform.anchorMin = new Vector2(0, GameController.instance.warningHeights[(int)GameController.instance.license] / GameController.instance.startingHeight);
-        warningLine.rectTransform.anchorMax = new Vector2(0.5f, GameController.instance.warningHeights[(int)GameController.instance.license] / GameController.instance.startingHeight);
+        warningLine.rectTransform.anchorMax = new Vector2(0.75f, GameController.instance.warningHeights[(int)GameController.instance.license] / GameController.instance.startingHeight);
+        if(GameController.instance.challengeJump)
+        {
+            deployParachute.gameObject.SetActive(false);
+        }
     }
 
     void Update()
     {
         if (GameController.instance.gameRunning)
         {
-            if (Input.GetKeyDown(KeyCode.Space) || currLocation < GameController.instance.minHeight)
+            if (!GameController.instance.challengeJump)
             {
-                DeployParachute();
+                if (Input.GetKeyDown(KeyCode.Space) || currLocation < GameController.instance.minHeight)
+                {
+                    DeployParachute();
+                }
             }
-            horizontalVelocity.text = playerFalling.velocity[0].ToString();
-            verticalVelocity.text = playerFalling.velocity[1].ToString();
+            else
+            {
+                if (currLocation < GameController.instance.warningHeights[4])
+                {
+                    DeployParachute();
+                }
+            }
+            speed.text = Mathf.Sqrt(Mathf.Pow(playerFalling.jumpersVelocity[0], 2) + Mathf.Pow(playerFalling.jumpersVelocity[1], 2)).ToString();
+            horizontalVelocity.text = playerFalling.jumpersVelocity[0].ToString();
+            verticalVelocity.text = playerFalling.jumpersVelocity[1].ToString();
             // Setting timer
             if (Mathf.FloorToInt(timeSinceJump) % 60 < 10)
             {
@@ -67,12 +84,12 @@ public class GUI : MonoBehaviour
             {
                 timer.text = "0" + Mathf.Floor(timeSinceJump / 60) + ":" + Mathf.FloorToInt(timeSinceJump) % 60;
             }
-            currLocation = playerFalling.location[1] - GameController.instance.startingAltitude + GameController.instance.startingHeight;
+            currLocation = playerFalling.jumpersLocation[1] - GameController.instance.startingAltitude + GameController.instance.startingHeight;
             // Setting location of height and length text on GUI
             height.text = Mathf.Floor(currLocation).ToString();
-            height.rectTransform.anchorMax = new Vector2(startingAnchorHeightX[1], startingAnchorHeightY[1] + (currLocation - GameController.instance.startingHeight) * (((float)height.fontSize / Display.main.renderingHeight) - startingAnchorHeightY[1]) / (0 - GameController.instance.startingHeight));
-            length.text = Mathf.Floor(playerFalling.location[0]).ToString() + "\n|";
-            length.rectTransform.anchorMin = new Vector2(startingAnchorLengthX[0] + playerFalling.location[0] * (0 - startingAnchorLengthX[0]) / (GameController.instance.startingHeight / 2 - 0), startingAnchorLengthY[0]);
+            height.rectTransform.anchorMax = new Vector2(startingAnchorGUIHeightX[1], startingAnchorGUIHeightY[1] + (currLocation - GameController.instance.startingHeight) * (((float)height.fontSize / Display.main.renderingHeight) - startingAnchorGUIHeightY[1]) / (0 - GameController.instance.startingHeight));
+            length.text = Mathf.Floor(playerFalling.jumpersLocation[0]).ToString() + "\n|";
+            length.rectTransform.anchorMin = new Vector2(startingAnchorGUILengthX[0] + playerFalling.jumpersLocation[0] * (0 - startingAnchorGUILengthX[0]) / (GameController.instance.startingHeight * 3 / 4 - 0), startingAnchorGUILengthY[0]);
             // Checking when warning GUI should be shown
             if (currLocation < GameController.instance.warningHeights[(int)GameController.instance.license])
             {
@@ -84,40 +101,65 @@ public class GUI : MonoBehaviour
     void FixedUpdate()
     {
         // Checking absolut maximum of vertical velocity
-        if (Mathf.Abs(playerFalling.velocity[1]) > Mathf.Abs(maxVerticalVelocity))
+        if (Mathf.Abs(float.Parse(speed.text)) > Mathf.Abs(maxSpeed))
         {
-            maxVerticalVelocity = playerFalling.velocity[1];
+            maxSpeed = float.Parse(speed.text);
         }
-        sumVerticalVelocity += playerFalling.velocity[1];
-        sumAngleOfAttack += playerFalling.AngleOfAttack;
+        sumSpeed += float.Parse(speed.text);
+        sumAngleOfAttack += playerFalling.angleOfAttack;
         timeSinceJump += Time.fixedDeltaTime;
     }
 
     // Deploy a parachute and finish the jump with statistics
     public void DeployParachute()
     {
+        SaveFlightPath saving = new SaveFlightPath();
+        saving.Save();
         GameController.instance.gameRunning = false;
         ingame.SetActive(false);
         scoreboard.SetActive(true);
         // Create random between endLine and warningLine. If the player is above this random, show statisctics, otherwise show info about failing the jump
-        if ((currLocation > Random.Range(GameController.instance.minHeight, GameController.instance.warningHeights[(int)GameController.instance.license])))
+        if (!GameController.instance.challengeJump)
         {
-            scores.text = "Altitude of a jump: " + GameController.instance.startingAltitude + " meters"
-                + "\nHeight of a jump: " + GameController.instance.startingHeight + " meters"
-                + "\nLatitude of a jump: " + GameController.instance.latitude + "°"
-                + "\nHeight of a human: " + (GameController.instance.humanHeight * 100) + " centimeters"
-                + "\nMass of a human: " + GameController.instance.mass + " kilograms"
-                + "\nTime spent in air: " + Mathf.Floor(timeSinceJump / 60) + " minutes " + (timeSinceJump % 60) + " seconds"
-                + "\nAverage vertical velocity: " + (sumVerticalVelocity / timeSinceJump * Time.fixedDeltaTime) + " meters per second"
-                + "\nMax vertical velocity: " + maxVerticalVelocity + " meters per second"
-                + "\nTraveled vertical distance: " + (GameController.instance.startingAltitude - playerFalling.location[1]) + " meters"
-                + "\nTraveled horizontal distance: " + playerFalling.location[0] + " meters"
-                + "\nAverage angle of attack: " + (sumAngleOfAttack / timeSinceJump * Time.fixedDeltaTime) + "°";
+            if ((currLocation > Random.Range(GameController.instance.minHeight, GameController.instance.warningHeights[(int)GameController.instance.license])))
+            {
+                scores.text = "Altitude of a jump: " + GameController.instance.startingAltitude + " meters"
+                    + "\nHeight of a jump: " + GameController.instance.startingHeight + " meters"
+                    + "\nLatitude of a jump: " + GameController.instance.jumpersLatitude + "°"
+                    + "\nHeight of a human: " + (GameController.instance.jumpersHeight * 100) + " centimeters"
+                    + "\nMass of a human: " + GameController.instance.jumpersMass + " kilograms"
+                    + "\nTime spent in air: " + Mathf.Floor(timeSinceJump / 60) + " minutes " + (timeSinceJump % 60) + " seconds"
+                    + "\nTraveled vertical distance: " + (GameController.instance.startingAltitude - playerFalling.jumpersLocation[1]) + " meters"
+                    + "\nTraveled horizontal distance: " + playerFalling.jumpersLocation[0] + " meters"
+                    + "\nAverage angle of attack: " + (sumAngleOfAttack / timeSinceJump * Time.fixedDeltaTime) + "°"
+                    + "\nMax speed: " + maxSpeed + " meters per second"
+                    + "\nAverage speed: " + (sumSpeed / timeSinceJump * Time.fixedDeltaTime) + " meters per second";
+            }
+            else
+            {
+                scores.text = "You opened your parachute too late and had some malfunctions so you didn't manage to fix that or deploy your reserve parachute in time, so you're lucky that you survived. But you were taken to hospital with major injuries.\n Please respect the rules and deploy your parachute higher than recommended minimum for your license as you're risking your life if some malfuctions were to happen.";
+            }
         }
         else
         {
-            scores.text = "You opened your parachute too late and had some malfunctions so you didn't manage to fix that or deploy your reserve parachute in time, so you're lucky that you survived. But you were taken to hospital with major injuries.\n Please respect the rules and deploy your parachute higher than recommended minimum for your license as you're risking your life if some malfuctions were to happen.";
+            scores.text = "\nTime spent in air: " + Mathf.Floor(timeSinceJump / 60) + " minutes " + (timeSinceJump % 60) + " seconds"
+                + "\nTraveled horizontal distance: " + playerFalling.jumpersLocation[0] + " meters"
+                + "\nAverage angle of attack: " + (sumAngleOfAttack / timeSinceJump * Time.fixedDeltaTime) + "°"
+                + "\nMax speed: " + maxSpeed + " meters per second"
+                + "\nAverage speed: " + (sumSpeed / timeSinceJump * Time.fixedDeltaTime) + " meters per second";
+            if (GameController.instance.challengeJump)
+            {
+                if ((sumSpeed / timeSinceJump * Time.fixedDeltaTime) > 95.4f)
+                {
+                    scores.text += "\nCongratulations you passed the challenge and beat average speed of 95.4 m/s!";
+                }
+                else
+                {
+                    scores.text += "\nYou didn't pass the challenge of average speed above 95.4 m/s, good luck next time.";
+                }
+            }
         }
+        SaveFlightPath.dataToSave = "";
     }
 
     public void PauseGame()

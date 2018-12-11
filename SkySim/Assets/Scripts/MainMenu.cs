@@ -18,6 +18,7 @@ public class MainMenu : MonoBehaviour
     public Button jumpButton;
     public Button editButton;
     public Button exitButton;
+    public Button challengeButton;
     public Slider planeSpeedSlider;
     public Slider humanHeightSlider;
     public Slider latitudeSlider;
@@ -83,36 +84,56 @@ public class MainMenu : MonoBehaviour
         jumpButton.gameObject.SetActive(false);
         editButton.gameObject.SetActive(false);
         exitButton.gameObject.SetActive(false);
+        challengeButton.gameObject.SetActive(false);
+        GameController.instance.challengeJump = false;
+        playerAnim.speed = 1; // Start animation
+    }
+
+    public void ChallengeJump()
+    {
+        jumpStarted = true;
+        jumpButton.gameObject.SetActive(false);
+        editButton.gameObject.SetActive(false);
+        exitButton.gameObject.SetActive(false);
+        challengeButton.gameObject.SetActive(false);
+        GameController.instance.challengeJump = true;
+        GameController.instance.jumpersMass = 80;
+        GameController.instance.jumpersHeight = 1.75f;
+        GameController.instance.startingHeight = 4000;
+        GameController.instance.startingAltitude = 4000;
+        GameController.instance.jumpersLatitude = 0;
+        GameController.instance.planeSpeed = 45;
+        GameController.instance.license = GameController.Licenses.D;
         playerAnim.speed = 1; // Start animation
     }
 
     // Load data from GameController
     public void Edit()
     {
-        massValueText.text = GameController.instance.mass + " kg";
-        humanHeightValueText.text = GameController.instance.humanHeight * 100 + " cm";
+        massValueText.text = GameController.instance.jumpersMass + " kg";
+        humanHeightValueText.text = GameController.instance.jumpersHeight * 100 + " cm";
         heightValueText.text = GameController.instance.startingHeight + " m";
         altitudeValueText.text = GameController.instance.startingAltitude + " m";
-        latitudeValueText.text = GameController.instance.latitude + "°";
+        latitudeValueText.text = GameController.instance.jumpersLatitude + "°";
         planeSpeedValueText.text = GameController.instance.planeSpeed + "m/s";
         planeSpeedSlider.value = GameController.instance.planeSpeed;
-        humanHeightSlider.value = GameController.instance.humanHeight * 100;
-        latitudeSlider.value = GameController.instance.latitude;
+        humanHeightSlider.value = GameController.instance.jumpersHeight * 100;
+        latitudeSlider.value = GameController.instance.jumpersLatitude;
         altitudeSlidert.value = GameController.instance.startingAltitude;
-        massSlider.value = GameController.instance.mass;
+        massSlider.value = GameController.instance.jumpersMass;
         heightSlider.value = GameController.instance.startingHeight;
         licenseDropdown.value = (int)GameController.instance.license;
     }
 
     public void SetMass(float newMass)
     {
-        GameController.instance.mass = newMass;
+        GameController.instance.jumpersMass = newMass;
         massValueText.text = newMass + " kg";
     }
 
     public void SetHumanHeight(float newHeight)
     {
-        GameController.instance.humanHeight = newHeight / 100;
+        GameController.instance.jumpersHeight = newHeight / 100;
         humanHeightValueText.text = newHeight + " cm";
     }
 
@@ -136,7 +157,7 @@ public class MainMenu : MonoBehaviour
 
     public void SetLatitude(float newLatitude)
     {
-        GameController.instance.latitude = newLatitude;
+        GameController.instance.jumpersLatitude = newLatitude;
         latitudeValueText.text = newLatitude + "°";
     }
 
