@@ -100,14 +100,17 @@ public class GUI : MonoBehaviour
 
     void FixedUpdate()
     {
-        // Checking absolut maximum of vertical velocity
-        if (Mathf.Abs(float.Parse(speed.text)) > Mathf.Abs(maxSpeed))
+        if (GameController.instance.gameRunning)
         {
-            maxSpeed = float.Parse(speed.text);
+            // Checking absolut maximum of vertical velocity
+            if (Mathf.Abs(float.Parse(speed.text)) > Mathf.Abs(maxSpeed))
+            {
+                maxSpeed = float.Parse(speed.text);
+            }
+            sumSpeed += float.Parse(speed.text);
+            sumAngleOfAttack += playerFalling.angleOfAttack;
+            timeSinceJump += Time.fixedDeltaTime;
         }
-        sumSpeed += float.Parse(speed.text);
-        sumAngleOfAttack += playerFalling.angleOfAttack;
-        timeSinceJump += Time.fixedDeltaTime;
     }
 
     // Deploy a parachute and finish the jump with statistics

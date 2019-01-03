@@ -18,29 +18,32 @@ public class Moving : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        if (Input.GetKey(KeyCode.UpArrow))
+        if (GameController.instance.gameRunning)
         {
-            jumpersFalling.jumpersRotation[0] += rotationSpeed * Time.fixedDeltaTime;
-        }
-        if(Input.GetKey(KeyCode.DownArrow))
-        {
-            jumpersFalling.jumpersRotation[0] -= rotationSpeed * Time.fixedDeltaTime;
-        }
-        if (jumpersFalling.jumpersRotation[0] > 180)
-        {
-            jumpersFalling.jumpersRotation[0] = 180;
-        }
-        else if (jumpersFalling.jumpersRotation[0] < 0)
-        {
-            jumpersFalling.jumpersRotation[0] = 0;
-        }
-        if (jumpersFalling.jumpersRotation[0] - 90 > rotationSpeed / 5 * Time.fixedDeltaTime)
-        {
-            jumpersFalling.jumpersRotation[0] -= rotationSpeed / 5 * Time.fixedDeltaTime;
-        }
-        else if (jumpersFalling.jumpersRotation[0] - 90 < -rotationSpeed / 5 * Time.fixedDeltaTime)
-        {
-            jumpersFalling.jumpersRotation[0] += rotationSpeed / 5 * Time.fixedDeltaTime;
+            if (Input.GetKey(KeyCode.UpArrow))
+            {
+                jumpersFalling.jumpersRotation[0] += rotationSpeed * Time.fixedDeltaTime;
+            }
+            if (Input.GetKey(KeyCode.DownArrow))
+            {
+                jumpersFalling.jumpersRotation[0] -= rotationSpeed * Time.fixedDeltaTime;
+            }
+            if (jumpersFalling.jumpersRotation[0] > 180)
+            {
+                jumpersFalling.jumpersRotation[0] = 180;
+            }
+            else if (jumpersFalling.jumpersRotation[0] < 0)
+            {
+                jumpersFalling.jumpersRotation[0] = 0;
+            }
+            if (jumpersFalling.jumpersRotation[0] - 90 > rotationSpeed / 5 * Time.fixedDeltaTime)
+            {
+                jumpersFalling.jumpersRotation[0] -= rotationSpeed / 5 * Time.fixedDeltaTime;
+            }
+            else if (jumpersFalling.jumpersRotation[0] - 90 < -rotationSpeed / 5 * Time.fixedDeltaTime)
+            {
+                jumpersFalling.jumpersRotation[0] += rotationSpeed / 5 * Time.fixedDeltaTime;
+            }
         }
     }
 }
