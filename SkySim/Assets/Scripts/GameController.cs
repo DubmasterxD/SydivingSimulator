@@ -7,8 +7,7 @@ using UnityEngine.UI;
 public class GameController : MonoBehaviour
 {
     public enum Licenses { student, A, B, C, D };
-
-    // Variables
+        // Variables
     public float startingAltitude;
     public float startingHeight;
     public float jumpersMass;
@@ -20,8 +19,7 @@ public class GameController : MonoBehaviour
     public Licenses license;
     public bool gameRunning = false;
     public bool challengeJump = false;
-
-    // References
+        // References
     public static GameController instance;
     public GameObject player;
 

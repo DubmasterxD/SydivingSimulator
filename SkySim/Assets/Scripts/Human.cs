@@ -21,9 +21,19 @@ public class Human : MonoBehaviour {
         jumpersMass = GameController.instance.jumpersMass;
         jumpersHeight = GameController.instance.jumpersHeight;
         jumpersHeight = GameController.instance.jumpersHeight;
-        jumpersFrontArea = humanHead50c[width] / humanHeight50c * jumpersHeight * humanHead50c[height] / humanHeight50c * jumpersHeight + humanArms50c[width] / humanHeight50c * jumpersHeight * humanArms50c[height] / humanHeight50c * jumpersHeight + humanTorso50c[width] / humanHeight50c * jumpersHeight * humanTorso50c[height] / humanHeight50c * jumpersHeight + humanLegs50c[width] / humanHeight50c * jumpersHeight * humanLegs50c[height] / humanHeight50c * jumpersHeight;
+        jumpersFrontArea = humanHead50c[width] / humanHeight50c * jumpersHeight * 
+                           humanHead50c[height] / humanHeight50c * jumpersHeight + 
+                           humanArms50c[width] / humanHeight50c * jumpersHeight * 
+                           humanArms50c[height] / humanHeight50c * jumpersHeight + 
+                           humanTorso50c[width] / humanHeight50c * jumpersHeight * 
+                           humanTorso50c[height] / humanHeight50c * jumpersHeight + 
+                           humanLegs50c[width] / humanHeight50c * jumpersHeight * 
+                           humanLegs50c[height] / humanHeight50c * jumpersHeight;
         jumpersFrontArea *= (jumpersMass * 5.5f) / (jumpersMass * 4.5f + 75);
-        jumpersTopArea = humanTorso50c[width] / humanHeight50c * jumpersHeight * humanTorso50c[depth] / humanHeight50c * jumpersHeight + 40f / humanHeight50c * jumpersHeight * humanArms50c[depth] / humanHeight50c * jumpersHeight;
+        jumpersTopArea = humanTorso50c[width] / humanHeight50c * jumpersHeight * 
+                         humanTorso50c[depth] / humanHeight50c * jumpersHeight + 
+                         40f / humanHeight50c * jumpersHeight * 
+                         humanArms50c[depth] / humanHeight50c * jumpersHeight;
         jumpersTopArea *= (jumpersMass * 1.5f) / (jumpersMass * 0.5f + 75);
         gameObject.GetComponent<Falling>().jumpersTopProjectedArea = jumpersTopArea;
         gameObject.GetComponent<Falling>().jumpersFrontProjectedArea = jumpersFrontArea;

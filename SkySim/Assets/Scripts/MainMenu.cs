@@ -14,11 +14,7 @@ public class MainMenu : MonoBehaviour
     private Vector3 endCamPosition = new Vector3(-2f, 4001f, 0);
     private Vector3 endCamRotation = new Vector3(0, 90f, 0);
 
-    // GUI components
-    public Button jumpButton;
-    public Button editButton;
-    public Button exitButton;
-    public Button challengeButton;
+    // references to GUI components
     public Slider planeSpeedSlider;
     public Slider humanHeightSlider;
     public Slider latitudeSlider;
@@ -33,7 +29,7 @@ public class MainMenu : MonoBehaviour
     public Text massValueText;
     public Dropdown licenseDropdown;
 
-    // References
+    // Other references
     public GameObject plane;
     public Camera mainCamera;
     private Animator playerAnim;
@@ -62,13 +58,21 @@ public class MainMenu : MonoBehaviour
     {
         if (jumpStarted == true)
         {
-            mainCamera.gameObject.transform.localPosition = new Vector3(startCamPosition[0] + jumpTimer * (endCamPosition[0] - startCamPosition[0]) / 2, startCamPosition[1] + jumpTimer * (endCamPosition[1] - startCamPosition[1]) / 2, startCamPosition[2] + jumpTimer * (endCamPosition[2] - startCamPosition[2]) / 2);
-            mainCamera.gameObject.transform.localRotation = Quaternion.Euler(startCamRotation[0] + jumpTimer * (endCamRotation[0] - startCamRotation[0]) / 2, startCamRotation[1] + jumpTimer * (endCamRotation[1] - startCamRotation[1]) / 2, startCamRotation[2] + jumpTimer * (endCamRotation[2] - startCamRotation[2]) / 2);
+            mainCamera.gameObject.transform.localPosition = 
+                new Vector3(startCamPosition[0] + jumpTimer * (endCamPosition[0] - startCamPosition[0]) / 2, 
+                            startCamPosition[1] + jumpTimer * (endCamPosition[1] - startCamPosition[1]) / 2, 
+                            startCamPosition[2] + jumpTimer * (endCamPosition[2] - startCamPosition[2]) / 2);
+            mainCamera.gameObject.transform.localRotation = 
+                Quaternion.Euler(startCamRotation[0] + jumpTimer * (endCamRotation[0] - startCamRotation[0]) / 2, 
+                                 startCamRotation[1] + jumpTimer * (endCamRotation[1] - startCamRotation[1]) / 2, 
+                                 startCamRotation[2] + jumpTimer * (endCamRotation[2] - startCamRotation[2]) / 2);
             jumpTimer += Time.fixedDeltaTime;
             if (jumpTimer > 1.3f)
             {
                 // Plane moves away as jumper gets off of the ground
-                planeRB.MovePosition(new Vector3(plane.transform.position.x + 3 * Time.fixedDeltaTime, plane.transform.position.y, plane.transform.position.z - 3 * Time.fixedDeltaTime));
+                planeRB.MovePosition(new Vector3(plane.transform.position.x + 3 * Time.fixedDeltaTime, 
+                                                 plane.transform.position.y, 
+                                                 plane.transform.position.z - 3 * Time.fixedDeltaTime));
             }
         }
     }
@@ -81,10 +85,6 @@ public class MainMenu : MonoBehaviour
     public void Jump()
     {
         jumpStarted = true;
-        jumpButton.gameObject.SetActive(false);
-        editButton.gameObject.SetActive(false);
-        exitButton.gameObject.SetActive(false);
-        challengeButton.gameObject.SetActive(false);
         GameController.instance.challengeJump = false;
         playerAnim.speed = 1; // Start animation
     }
@@ -92,10 +92,6 @@ public class MainMenu : MonoBehaviour
     public void ChallengeJump()
     {
         jumpStarted = true;
-        jumpButton.gameObject.SetActive(false);
-        editButton.gameObject.SetActive(false);
-        exitButton.gameObject.SetActive(false);
-        challengeButton.gameObject.SetActive(false);
         GameController.instance.challengeJump = true;
         GameController.instance.jumpersMass = 80;
         GameController.instance.jumpersHeight = 1.75f;
