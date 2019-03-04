@@ -150,6 +150,8 @@ public class Falling : MonoBehaviour
 
     private void CalculateLocation()
     {
+        Debug.Log(liftProcejtedArea);
+        Debug.Log(dragProjectedArea);
         // ay = v^2 * rho * (sin(alfa) * Cd * A + cos(alfa) * Cl * B) / (2 * m) - g
         jumpersAcceleration[y] = (Mathf.Pow(jumpersVelocity[x], 2) + Mathf.Pow(jumpersVelocity[y], 2)) * 
             currAirDensity / (2 * jumpersMass) * (Mathf.Sin(alpha) * dragCoefficient * dragProjectedArea + 

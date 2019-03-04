@@ -4,11 +4,13 @@ using UnityEngine;
 
 public class TerrainScript : MonoBehaviour
 {
-    private float startingDistGroundSea = 207.3877f;
+    private float startingDistGroundSea = 207.3877f;  //starting height above sea level of ground
 
     void Start()
     {
+        float startingAltitude = GameController.instance.startingAltitude;
+        float startingHeight = GameController.instance.startingHeight;
         // Moving terrain so the distance between it and player is startingHeight
-        gameObject.transform.position += new Vector3(0, GameController.instance.startingAltitude-GameController.instance.startingHeight - startingDistGroundSea, 0);
+        gameObject.transform.position += new Vector3(0, startingAltitude - startingHeight - startingDistGroundSea, 0);
     }
 }

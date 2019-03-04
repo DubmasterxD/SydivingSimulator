@@ -26,11 +26,11 @@ public class GUI : MonoBehaviour
     public Text horizontalVelocity;
     public Text scores;
     public Button deployParachute;
-    public RawImage warningLine;                // Line on minimap to show recommended lowest height to open parachute
-    public RawImage endLine;                    // Line on minimap to show lowest height possible without
-    public GameObject warning;                  // GUI height warning
-    public GameObject ingame;                   // GUI while falling
-    public GameObject scoreboard;               // GUI after falling
+    public RawImage warningLine;                    // Line on minimap to show recommended lowest height to open parachute
+    public RawImage endLine;                        // Line on minimap to show lowest height possible without
+    public GameObject warning;                      // GUI height warning
+    public GameObject ingame;                       // GUI while falling
+    public GameObject scoreboard;                   // GUI after falling
 
     // References 
     public GameObject player;
@@ -39,15 +39,25 @@ public class GUI : MonoBehaviour
     void Start()
     {
         playerFalling = player.GetComponent<Falling>();
-        currLocation = playerFalling.jumpersLocation[1] - GameController.instance.startingAltitude + GameController.instance.startingHeight;
+        currLocation = playerFalling.jumpersLocation[1] - GameController.instance.startingAltitude + 
+            GameController.instance.startingHeight;
+
         startingAnchorGUIHeightX = new Vector2(height.rectTransform.anchorMin.x, height.rectTransform.anchorMax.x);
         startingAnchorGUIHeightY = new Vector2(height.rectTransform.anchorMin.y, height.rectTransform.anchorMax.y);
         startingAnchorGUILengthX = new Vector2(length.rectTransform.anchorMin.x, length.rectTransform.anchorMax.x);
         startingAnchorGUILengthY = new Vector2(length.rectTransform.anchorMin.y, length.rectTransform.anchorMax.y);
-        endLine.rectTransform.anchorMin = new Vector2(0, GameController.instance.minHeight / GameController.instance.startingHeight);
-        endLine.rectTransform.anchorMax = new Vector2(0.75f, GameController.instance.minHeight / GameController.instance.startingHeight);
-        warningLine.rectTransform.anchorMin = new Vector2(0, GameController.instance.warningHeights[(int)GameController.instance.license] / GameController.instance.startingHeight);
-        warningLine.rectTransform.anchorMax = new Vector2(0.75f, GameController.instance.warningHeights[(int)GameController.instance.license] / GameController.instance.startingHeight);
+        endLine.rectTransform.anchorMin = new Vector2(0, 
+            GameController.instance.minHeight / GameController.instance.startingHeight);
+
+        endLine.rectTransform.anchorMax = new Vector2(0.75f, 
+            GameController.instance.minHeight / GameController.instance.startingHeight);
+
+        warningLine.rectTransform.anchorMin = new Vector2(0,
+            GameController.instance.warningHeights[(int)GameController.instance.license] / GameController.instance.startingHeight);
+
+        warningLine.rectTransform.anchorMax = new Vector2(0.75f, 
+            GameController.instance.warningHeights[(int)GameController.instance.license] / GameController.instance.startingHeight);
+
         if(GameController.instance.challengeJump)
         {
             deployParachute.gameObject.SetActive(false);
@@ -116,8 +126,6 @@ public class GUI : MonoBehaviour
     // Deploy a parachute and finish the jump with statistics
     public void DeployParachute()
     {
-        SaveFlightPath saving = new SaveFlightPath();
-        saving.Save();
         GameController.instance.gameRunning = false;
         ingame.SetActive(false);
         scoreboard.SetActive(true);
@@ -162,7 +170,12 @@ public class GUI : MonoBehaviour
                 }
             }
         }
-        SaveFlightPath.dataToSave = "";
+    }
+
+    // After opening parachute
+    public void GoBackToMenu()
+    {
+        SceneManager.LoadScene("Menu");
     }
 
     public void PauseGame()
@@ -175,12 +188,6 @@ public class GUI : MonoBehaviour
         {
             GameController.instance.gameRunning = true;
         }
-    }
-
-    // After opening parachute
-    public void GoBackToMenu()
-    {
-        SceneManager.LoadScene("Menu");
     }
 
     // While still falling
